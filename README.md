@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8" />
+  <title>Love for Tquyen 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #000011 0%, #000000 100%);
+      font-family: 'Times New Roman', Times, serif;
+      user-select: none;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    #galaxy {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #rotatingContainer {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      z-index: 2;
+      transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg);
+    }
+
+    .text-particle {
+      position: absolute;
+      white-space: nowrap;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      will-change: transform, opacity;
+      user-select: none;
+      transition: opacity 0.3s;
+    }
+
+    .image-particle {
+      position: absolute;
+      pointer-events: none;
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      will-change: transform, opacity;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 4px #fff);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="galaxy"></div>
+  <div id="rotatingContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    const rotatingContainer = document.getElementById('rotatingContainer');
+    const galaxy = document.getElementById('galaxy');
+
+    const messages = [
+      "thảo quyên xinh s1tg lun😍",
+      "mìn chỉ iu mìn tquyen hoi 💖",
+      "anh yêu em nhiều lắm ❤️",
+      "chúc tquyen ngày 20-10 vui vẻ 💐",
+      "mãi yêu tquyen 💗",
+      "tquyen là nhất 😘",
+      "chúc tquyen luôn xinh đẹp càng ngày học giỏi 💖"
+    ];
+    const textColor = "#ff7b9b";
+    const imageURL = "1.jpg";
+    const icons = ["💖", "💞", "💗", "❤️‍🔥"];
+
+    // Giới hạn hợp lý hơn
+    const maxParticles = 80;
+    const activeParticles = new Set();
+
+    // Hiệu ứng bay mềm mại hơn
+    function createTextParticle() {
+      if (activeParticles.size >= maxParticles) return;
+
+      const el = document.createElement('div');
+      const isIcon = Math.random() < 0.25;
+      el.className = 'text-particle';
+      el.textContent = isIcon
+        ? icons[Math.floor(Math.random() * icons.length)]
+        : messages[Math.floor(Math.random() * messages.length)];
+      el.style.fontSize = (isIcon ? 20 : 18) + Math.random() * 10 + 'px';
+      el.style.color = textColor;
+      el.style.opacity = 0;
+
+      rotatingContainer.appendChild(el);
+      const startX = Math.random() * window.innerWidth * 0.8;
+      const startY = window.innerHeight + 30;
+      const endY = -50;
+      const translateZ = -Math.random() * 300;
+      const duration = 9000 + Math.random() * 4000;
+      const t0 = performance.now();
+
+      function anim(t) {
+        const dt = t - t0;
+        const p = dt / duration;
+        if (p < 1) {
+          el.style.transform = `translate(${startX}px, ${startY - p * (startY - endY)}px) translateZ(${translateZ}px)`;
+          el.style.opacity = p < 0.1 ? p * 10 : (p > 0.9 ? (1 - p) * 10 : 1);
+          requestAnimationFrame(anim);
+        } else {
+          el.remove();
+          activeParticles.delete(el);
+        }
+      }
+
+      activeParticles.add(el);
+      requestAnimationFrame(anim);
+    }
+
+    function createImageParticle() {
+      if (activeParticles.size >= maxParticles) return;
+
+      const el = document.createElement('img');
+      el.src = imageURL;
+      el.className = 'image-particle';
+      el.style.opacity = 0;
+      rotatingContainer.appendChild(el);
+
+      const startX = Math.random() * window.innerWidth * 0.8;
+      const startY = window.innerHeight + 40;
+      const endY = -40;
+      const translateZ = -Math.random() * 300;
+      const duration = 10000 + Math.random() * 4000;
+      const t0 = performance.now();
+
+      function anim(t) {
+        const dt = t - t0;
+        const p = dt / duration;
+        if (p < 1) {
+          el.style.transform = `translate(${startX}px, ${startY - p * (startY - endY)}px) translateZ(${translateZ}px)`;
+          el.style.opacity = p < 0.1 ? p * 10 : (p > 0.9 ? (1 - p) * 10 : 1);
+          requestAnimationFrame(anim);
+        } else {
+          el.remove();
+          activeParticles.delete(el);
+        }
+      }
+
+      activeParticles.add(el);
+      requestAnimationFrame(anim);
+    }
+
+    // Nền sao
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 150;
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0);
+    galaxy.appendChild(renderer.domElement);
+
+    const starsCount = 500;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(starsCount * 3);
+    for (let i = 0; i < starsCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 400;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 400;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 400;
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const textureLoader = new THREE.TextureLoader();
+    const starTexture = textureLoader.load('https://threejs.org/examples/textures/sprites/disc.png');
+    const material = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.6,
+      map: starTexture,
+      transparent: true
+    });
+    const stars = new THREE.Points(geometry, material);
+    scene.add(stars);
+
+    function animateStars() {
+      requestAnimationFrame(animateStars);
+      stars.rotation.y += 0.0008;
+      renderer.render(scene, camera);
+    }
+    animateStars();
+
+    // Sinh hiệu ứng
+    window.addEventListener('DOMContentLoaded', () => {
+      setInterval(() => {
+        createTextParticle();
+        if (Math.random() < 0.3) createImageParticle();
+      }, 500); // giảm tốc độ sinh
+    });
+
+    // Nhạc
+    let audioStarted = false;
+    document.body.addEventListener('click', () => {
+      if (audioStarted) return;
+      const audio = new Audio('./có chắc yêu là đây.mp3');
+      audio.loop = true;
+      audio.play().catch(() => console.log("Không thể phát nhạc tự động."));
+      audioStarted = true;
+    });
+
+    // Hiệu ứng xoay
+    document.addEventListener('mousemove', (e) => {
+      const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+      const rotY = ((e.clientX - cx) / cx) * 10;
+      const rotX = (-(e.clientY - cy) / cy) * 10;
+      rotatingContainer.style.transform = `translate(-50%, -50%) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
