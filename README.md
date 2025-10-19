@@ -1,23 +1,4 @@
 
-
-<head>
-    <meta charset="UTF-8" />
-    <title>Loves</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background: radial-gradient(ellipse at center, #000011 0%, #000000 100%);
-            font-family: 'Times New Roman', Times, serif;
-            user-select: none;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
         #galaxy {
             position: fixed;
             top: 0;
